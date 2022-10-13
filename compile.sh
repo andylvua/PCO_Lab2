@@ -19,7 +19,7 @@ Compile(){
     g++ -c ./library/mystring.cpp -o ./obj/mystring.o
     ar rcs ./bin/libmystring.a ./obj/mystring.o
     g++ -c ./examples/example.cpp -o ./obj/example.o
-    g++ ./obj/example.o ./bin/libmystring.a -o ./bin/example
+    g++ ./obj/example.o -lmystring -L./bin -o ./bin/example
     echo "Compiled successfully"
 }
 
