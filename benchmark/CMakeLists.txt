@@ -1,4 +1,4 @@
-set(BENCHMARK_ENABLE_TESTING NO)
+set(BENCHMARK_ENABLE_TESTING OFF)
 
 FetchContent_Declare(
         benchmark
