@@ -1,6 +1,7 @@
 #! /bin/bash
-# Compile static library
 
+RED="\033[31m"
+NORMAL="\033[0m"
 # List of valid arguments
 valid_args=(-h --help -cr --compile-run -c --compile -r --run --clean)
 
@@ -14,17 +15,31 @@ Help(){
     echo "  --clean: Clean compiled files and build directory"
 }
 
-Compile(){
+CompileLibraries(){
     mkdir -p bin && mkdir -p obj
+
+    echo "Compiling static library..."
     g++ -c ./library/mystring.cpp -o ./obj/mystring.o
     ar rcs ./bin/libmystring.a ./obj/mystring.o
+    echo "Compiled successfully. Written to ./bin/libmystring.a"
+
+    echo "Compiling dynamic library..."
+    g++ -c ./library/mystring.cpp -fPIC -o ./obj/mystring.o
+    g++ -shared -fPIC -o ./bin/libmystring.so ./obj/mystring.o
+    echo "Compiled successfully. Written to ./bin/libmystring.so"
+}
+
+CompileExample(){
+    echo "Compiling example..."
+    mkdir -p bin && mkdir -p obj
     g++ -c ./examples/example.cpp -o ./obj/example.o
-    g++ ./obj/example.o -lmystring -L./bin -o ./bin/example
-    echo "Compiled successfully"
+    echo "Linking with dynamic library..."
+    g++ -fPIC ./obj/example.o ./bin/libmystring.so -o ./bin/example
+    echo "Successfully linked with dynamic library. Written to ./bin/example"
 }
 
 CheckCompiled(){
-    if [[ -f ./bin/example ]]; then
+    if [[ -f ./bin/example && -f ./bin/libmystring.so ]]; then
         return 0
     else
         return 1
@@ -33,16 +48,41 @@ CheckCompiled(){
 
 Run(){
     if CheckCompiled; then
-        ./bin/example
+        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            echo "Linux detected. Setting LD_LIBRARY_PATH..."
+            echo ""
+            LD_LIBRARY_PATH="./bin" ./bin/example
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
+            echo "MacOS detected. Setting DYLD_LIBRARY_PATH..."
+            echo ""
+            DYLD_LIBRARY_PATH="./bin" ./bin/example
+        fi
     else
-        echo "Error: nothing to run. Example is not compiled."
+        echo -e "${RED}Error: nothing to run. Necessary files are not compiled. Run with -c or --compile option to compile.${NORMAL}
+
+Do you want to automatically compile libraries and run the example? (y/n)"
+        read -r answer
+        if [[ "$answer" == "y" ]]; then
+            CompileLibraries
+            CompileExample
+            Run
+        else
+            echo "Exiting..."
+            exit 1
+        fi
     fi
 }
 
 Clean(){
-    rm -rf ./bin
-    rm -rf ./obj
-    echo "Cleaned successfully."
+    echo "This will remove all compiled files along with the library. Are you sure? (y/n)"
+    read -r answer
+    if [[ "$answer" == "y" ]]; then
+        rm -rf ./bin
+        rm -rf ./obj
+        echo "Cleaned successfully."
+    else
+        echo -e "${RED}Aborted${NORMAL}"
+    fi
 }
 
 
@@ -54,11 +94,10 @@ fi
 
 # Check if there is more than one argument
 if [ $# -gt 1 ]; then
-    echo "Error: Too many arguments"
+    echo -e "${RED}Error: Too many arguments${NORMAL}"
     Help
     exit 1
 fi
-
 
 # Check if the argument is -h or --help
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
@@ -74,13 +113,15 @@ fi
 
 # Check if the argument is -c or --compile
 if [ "$1" = "-c" ] || [ "$1" = "--compile" ]; then
-    Compile
+    CompileLibraries
+    CompileExample
     exit 0
 fi
 
 # Check if the argument is -cr or --compile-run
 if [ "$1" = "-cr" ] || [ "$1" = "--compile-run" ]; then
-    Compile
+    CompileLibraries
+    CompileExample
     Run
     exit 0
 fi
@@ -93,7 +134,7 @@ fi
 
 # Check if the argument is not valid
 if [[ ! " ${valid_args[*]} " == *" $1 "* ]]; then
-    echo "Error: Invalid argument"
+    echo -e "${RED}Error: Invalid argument${NORMAL}"
     Help
     exit 1
 fi
