@@ -248,8 +248,6 @@ void my_str_t::clear() {
     size_m = 0;
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
 // Implemented by Andrew Yaroshevych
 void my_str_t::insert(size_t idx, const my_str_t &str) {
     if (idx >= size_m) {
@@ -275,7 +273,6 @@ void my_str_t::insert(size_t idx, const my_str_t &str) {
 
     data_m[size_m] = '\0';
 }
-#pragma clang diagnostic pop
 
 // Implemented by Andrew Yaroshevych
 void my_str_t::insert(size_t idx, const char *cstr) {
