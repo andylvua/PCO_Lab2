@@ -63,18 +63,9 @@ jobs:
         with:
           macos: |
             ${{github.workspace}}/build/benchmark/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_macos --benchmark_out_format=console
-            
-            echo "Writing credits"
-            
-            echo $'\nThis report is generated with Google Benchmark and GitHub Actions. ©andylvua' >> "${{github.workspace}}/benchmark/benchmark_results/benchmark-results_macos"
-          linux: |
-            echo "Running benchmark"
-            
+          linux: |            
             ${{github.workspace}}/build/benchmark/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_ubuntu --benchmark_out_format=console
-            
-            echo "Writing credits"
-            
-            echo $'\nThis report is generated with Google Benchmark and GitHub Actions. ©andylvua' >> "${{github.workspace}}/benchmark/benchmark_results/benchmark-results_ubuntu"
+
 #      - name: Commit report
 #        run: |
 #          git config --global user.name 'GitHub Actions'
