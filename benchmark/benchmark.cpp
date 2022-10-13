@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedValue"
-#pragma ide diagnostic ignored "performance-unnecessary-copy-initialization"
 //
 // Created by Andrew Yaroshevych on 06.10.2022.
 //
@@ -8,8 +5,6 @@
 #include "../library/mystring.h"
 
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedLocalVariable"
 static void MyStringCopyConstructor(benchmark::State& state) {
     my_str_t char_n_string(1000000, 'a');
     for (auto _ : state)
@@ -215,5 +210,3 @@ BENCHMARK(STDStringAt);
 
 
 BENCHMARK_MAIN();
-#pragma clang diagnostic pop
-#pragma clang diagnostic pop
