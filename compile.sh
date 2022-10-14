@@ -1,6 +1,5 @@
 #! /bin/bash
 # This script compiles the source code and creates the executable file
-
 # echo settings
 RED="\033[31m"
 NORMAL="\033[0m"
@@ -13,10 +12,10 @@ lib_dir=library
 bin_dir=bin
 obj_dir=obj
 dependencies=(mystring.cpp mystring.h)
-
 # Compiler
 cxx=g++
 
+# Flags
 Help(){
     echo "Usage: compile.sh [options]"
     echo "Options:"
@@ -27,45 +26,62 @@ Help(){
     echo "  --clean: Clean compiled files and build directory"
 }
 
+# Print error message and exit
+CompileError(){
+    echo -e "${RED}Error: Compilation failed.
+Please carefully check the error message above or refer to the project README and make sure you are not making any mistakes:
+https://github.com/ucu-cs/lab2_make_cmake-zinchukkryvenyaroshevychkharabara#readme${NORMAL}"
+    exit 1
+}
+
+# Compile static and shared libraries
 CompileLibraries(){
     mkdir -p $bin_dir && mkdir -p $obj_dir
 
     echo "Compiling static library..."
-    $cxx -c $lib_dir/mystring.cpp -o $obj_dir/mystring.o
-    ar rcs $bin_dir/libmystring.a $obj_dir/mystring.o
+    $cxx -c $lib_dir/mystring.cpp -o $obj_dir/mystring.o || CompileError
+    ar rcs $bin_dir/libmystring.a $obj_dir/mystring.o || CompileError
     echo "Compiled successfully. Written to $bin_dir/libmystring.a"
 
     echo "Compiling dynamic library..."
-    $cxx -c $lib_dir/mystring.cpp -fPIC -o $obj_dir/mystring.o
-    $cxx -shared -fPIC -o $bin_dir/libmystring.so $obj_dir/mystring.o
+    $cxx -c $lib_dir/mystring.cpp -fPIC -o $obj_dir/mystring.o || CompileError
+    $cxx -shared -fPIC -o $bin_dir/libmystring.so $obj_dir/mystring.o || CompileError
     echo "Compiled successfully. Written to $bin_dir/libmystring.so"
 }
 
+# Compile the example
 CompileExample(){
     echo "Compiling example..."
     mkdir -p $bin_dir && mkdir -p $obj_dir
-    $cxx -c ./examples/example.cpp -o $obj_dir/example.o
-    echo "Linking with dynamic library..."
-    $cxx -fPIC $obj_dir/example.o $bin_dir/libmystring.so -o $bin_dir/example
+    $cxx -c ./examples/example.cpp -o $obj_dir/example.o -I$lib_dir || CompileError
+    echo "Linking example with dynamic library..."
+    $cxx -fPIC $obj_dir/example.o $bin_dir/libmystring.so -o $bin_dir/example || CompileError
     echo "Successfully linked with dynamic library. Written to $bin_dir/example"
 }
 
+# Check state and compile libraries and example if needed
 Compile(){
     if CheckUpToDate; then
         echo -e "${RED}Libraries are up to date. Nothing to compile${NORMAL}"
         echo "Do you want to clean-compile? (y/n)"
         read -r answer
-        if [ "$answer" == "y" ]; then
-            Clean
-            Compile
+        if [ "$answer" == "n" ]; then
+            exit 0
         fi
-        return 0
-    fi
 
-    CompileLibraries
-    CompileExample
+        if Clean; then
+            CompileLibraries
+            CompileExample
+        else
+            exit 0
+        fi
+    else
+        CompileLibraries
+        CompileExample
+    fi
 }
 
+# Check if libraries are up to date
 CheckUpToDate(){
     if ! CheckCompiled; then
         return 1
@@ -74,10 +90,13 @@ CheckUpToDate(){
     for file in "${dependencies[@]}"; do
         if [ $lib_dir/"$file" -nt $bin_dir/libmystring.so ]; then
             return 1
+        else
+            return 0
         fi
     done
 }
 
+# Check if libraries and example are compiled
 CheckCompiled(){
     if [[ -f $bin_dir/example && -f $bin_dir/libmystring.so ]]; then
         return 0
@@ -86,6 +105,7 @@ CheckCompiled(){
     fi
 }
 
+# Run the example
 Run(){
     if CheckCompiled; then
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -112,6 +132,7 @@ Do you want to automatically compile libraries and run the example? (y/n)"
     fi
 }
 
+# Clean compiled files
 Clean(){
     echo "This will remove all compiled files along with the library. Are you sure? (y/n)"
     read -r answer
@@ -119,8 +140,10 @@ Clean(){
         rm -rf $bin_dir
         rm -rf $obj_dir
         echo "Cleaned successfully."
+        return 0
     else
         echo -e "${RED}Aborted${NORMAL}"
+        return 1
     fi
 }
 
