@@ -12,7 +12,11 @@ lib_dir=library
 examples_dir=examples
 bin_dir=bin
 obj_dir=obj
-dependencies=(blocksort.c bzlib.c compress.c crctable.c decompress.c huffman.c randtable.c)
+shopt -s nullglob
+dependencies=("${lib_dir}"/*.c)
+dependencies=("${dependencies[@]##*/}")
+examples=("${examples_dir}"/*.c)
+examples=("${examples[@]##*/}")
 # Compiler
 cxx=gcc
 cxx_flags=-O3
@@ -44,17 +48,17 @@ CompileLibraries(){
 
     echo "Compiling dependencies..."
     for file in "${dependencies[@]}"; do
-        $cxx $cxx_flags -c $lib_dir/"$file" -o $obj_dir/library/"${file%.*}".o || CompileError
+        $cxx $cxx_flags -c $lib_dir/"$file" -o $obj_dir/$lib_dir/"${file%.*}".o || CompileError
     done
 
     # Compile static library
     echo "Compiling static library..."
-    ar rcs $bin_dir/libbzip2.a $obj_dir/library/*.o || CompileError
+    ar rcs $bin_dir/libbzip2.a $obj_dir/$lib_dir/*.o || CompileError
     echo "Compiled successfully. Written to $bin_dir/libmystring.a"
 
     # Compile dynamic library
     echo "Compiling dynamic library..."
-    $cxx $cxx_flags -shared -fPIC -o $bin_dir/libbzip2.so $obj_dir/library/*.o || CompileError
+    $cxx $cxx_flags -shared -fPIC -o $bin_dir/libbzip2.so $obj_dir/$lib_dir/*.o || CompileError
     echo "Compiled successfully. Written to $bin_dir/libmystring.so"
 }
 
@@ -63,15 +67,15 @@ CompileExamples(){
     mkdir -p $bin_dir && mkdir -p $obj_dir
     mkdir -p $obj_dir/examples
     # Compile the examples
-    for file in "$examples_dir"/*.c; do
-        $cxx $cxx_flags -c "$file" -o $obj_dir/examples/"${file##*/}".o || CompileError
+    for file in "${examples[@]}"; do
+        $cxx $cxx_flags -c $examples_dir/"$file" -o $obj_dir/$examples_dir/"${file%.*}".o || CompileError
     done
 
     # Link the examples with the dynamic library
-    for file in "$examples_dir"/*.c; do
-        file_name="${file##*/}"
-        $cxx $cxx_flags -fPIC $obj_dir/examples/"${file##*/}".o $bin_dir/libbzip2.so -o $bin_dir/"${file_name%.*}" || CompileError
-        echo "Successfully linked with dynamic library. Written to $bin_dir/${file##*/}"
+    for file in "${examples[@]}"; do
+        $cxx $cxx_flags -fPIC $obj_dir/$examples_dir/"${file%.*}".o $bin_dir/libbzip2.so -o $bin_dir/"${file%.*}" \
+        || CompileError
+        echo "Successfully linked with dynamic library. Written to $bin_dir/${file%.*}"
     done
 }
 
