@@ -1,5 +1,5 @@
 CXX = gcc
-CXXFLAGS = -O3
+CXXFLAGS =
 PRG_NAME = libbzip2
 VPATH = library
 vpath %.c library
@@ -23,6 +23,8 @@ $(BIN_DIR)/$(PRG_NAME): $(OBJ_DIR)/$(LIB_DIR) $(BIN_DIR) $(OBJ)
 $(OBJ_DIR)/$(LIB_DIR)/%.o: $(LIB_DIR)/%.c
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
+release: CXXFLAGS += -O3
+release: all
 
 .PHONY: clean
 clean:

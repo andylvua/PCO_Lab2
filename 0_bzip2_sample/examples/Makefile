@@ -1,5 +1,5 @@
 CXX = gcc
-CXXFLAGS = -O3
+CXXFLAGS =
 PRG_NAME = bzip2 bzip2recover
 OBJ_DIR = obj
 BIN_DIR = bin
@@ -26,6 +26,9 @@ $(OBJ_DIR)/$(EX_DIR)/%.o: $(EX_DIR)/%.c
 
 $(BIN_DIR)/$(LIB):
 	make -f ./library/Makefile all
+
+release: CXXFLAGS += -O3
+release: all
 
 .PHONY: clean
 clean:
