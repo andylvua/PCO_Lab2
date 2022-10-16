@@ -9,11 +9,16 @@ valid_args=(-h --help -cr --compile-run -c --compile -r --run --clean)
 
 # Variables
 lib_dir=library
-bin_dir=bin
-obj_dir=obj
+examples_dir=examples
+build_dir=build
+bin_dir=$build_dir/bin
+obj_dir=$build_dir/obj
 dependencies=(mystring.cpp mystring.h)
 # Compiler
 cxx=g++
+cxx_flags=
+# Build type
+build_type="Debug"
 
 # Flags
 Help(){
@@ -24,6 +29,7 @@ Help(){
     echo "  -c, --compile: Compile only"
     echo "  -r, --run: Run only"
     echo "  --clean: Clean compiled files and build directory"
+    echo "  --build_type=Debug/Release: Set build type. Defaults to Debug"
 }
 
 # Print error message and exit
@@ -34,29 +40,35 @@ https://github.com/ucu-cs/lab2_make_cmake-zinchukkryvenyaroshevychkharabara#read
     exit 1
 }
 
+DebugMsg(){
+    if [ "$build_type" = "Debug" ]; then
+        echo "$1"
+    fi
+}
+
 # Compile static and shared libraries
 CompileLibraries(){
     mkdir -p $bin_dir && mkdir -p $obj_dir
 
-    echo "Compiling static library..."
-    $cxx -c $lib_dir/mystring.cpp -o $obj_dir/mystring.o || CompileError
+    DebugMsg "Compiling static library..."
+    $cxx $cxx_flags -c $lib_dir/mystring.cpp -o $obj_dir/mystring.o || CompileError
     ar rcs $bin_dir/libmystring.a $obj_dir/mystring.o || CompileError
-    echo "Compiled successfully. Written to $bin_dir/libmystring.a"
+    DebugMsg "Compiled successfully. Written to $bin_dir/libmystring.a"
 
-    echo "Compiling dynamic library..."
-    $cxx -c $lib_dir/mystring.cpp -fPIC -o $obj_dir/mystring.o || CompileError
-    $cxx -shared -fPIC -o $bin_dir/libmystring.so $obj_dir/mystring.o || CompileError
-    echo "Compiled successfully. Written to $bin_dir/libmystring.so"
+    DebugMsg "Compiling dynamic library..."
+    $cxx $cxx_flags -c $lib_dir/mystring.cpp -fPIC -o $obj_dir/mystring.o || CompileError
+    $cxx $cxx_flags -shared -fPIC -o $bin_dir/libmystring.so $obj_dir/mystring.o || CompileError
+    DebugMsg "Compiled successfully. Written to $bin_dir/libmystring.so"
 }
 
 # Compile the example
 CompileExample(){
-    echo "Compiling example..."
+    DebugMsg "Compiling example..."
     mkdir -p $bin_dir && mkdir -p $obj_dir
-    $cxx -c ./examples/example.cpp -o $obj_dir/example.o -I$lib_dir || CompileError
-    echo "Linking example with dynamic library..."
-    $cxx -fPIC $obj_dir/example.o $bin_dir/libmystring.so -o $bin_dir/example || CompileError
-    echo "Successfully linked with dynamic library. Written to $bin_dir/example"
+    $cxx $cxx_flags -c $examples_dir/example.cpp -o $obj_dir/example.o -I$lib_dir || CompileError
+    DebugMsg "Linking example with dynamic library..."
+    $cxx $cxx_flags -fPIC $obj_dir/example.o $bin_dir/libmystring.so -o $bin_dir/example || CompileError
+    DebugMsg "Successfully linked with dynamic library. Written to $bin_dir/example"
 }
 
 # Check state and compile libraries and example if needed
@@ -153,11 +165,27 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-# Check if there is more than one argument
-if [ $# -gt 1 ]; then
+# Check if there is more than one argument or second argument splitted by '=' is not --build_type
+if [ $# -gt 1 ] && [ "${2%=*}" != "--build_type" ]; then
     echo -e "${RED}Error: Too many arguments${NORMAL}"
     Help
     exit 1
+fi
+
+# Check build type if it is passed
+if [ "${2%=*}" == "--build_type" ]; then
+    if [ "${2#*=}" == "Debug" ]; then
+        cxx_flags="-g -O0"
+        build_type="Debug"
+    elif [ "${2#*=}" == "Release" ]; then
+        echo "build_type is set to Release. To see debug messages, set build_type to Debug"
+        cxx_flags="-O3"
+        build_type="Release"
+    else
+        echo -e "${RED}Error: Invalid build type${NORMAL}"
+        Help
+        exit 1
+    fi
 fi
 
 # Check if the argument is -h or --help
