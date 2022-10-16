@@ -19,7 +19,9 @@ examples=("${examples_dir}"/*.c)
 examples=("${examples[@]##*/}")
 # Compiler
 cxx=gcc
-cxx_flags=-O3
+cxx_flags=
+# Build type
+build_type="Debug"
 
 # Flags
 Help(){
@@ -30,6 +32,7 @@ Help(){
     echo "  -c, --compile: Compile only"
     echo "  -r, --run: Run only"
     echo "  --clean: Clean compiled files and build directory"
+    echo "  --build_type=Debug/Release: Set build type. Defaults to Debug"
 }
 
 # Print error message and exit
@@ -40,26 +43,32 @@ https://github.com/ucu-cs/lab2_make_cmake-zinchukkryvenyaroshevychkharabara#read
     exit 1
 }
 
+DebugMsg(){
+    if [ "$build_type" = "Debug" ]; then
+        echo "$1"
+    fi
+}
+
 # Compile static and shared libraries
 CompileLibraries(){
     ## Compile the dependencies
     mkdir -p $bin_dir && mkdir -p $obj_dir
     mkdir -p $obj_dir/library
 
-    echo "Compiling dependencies..."
+    DebugMsg "Compiling dependencies..."
     for file in "${dependencies[@]}"; do
         $cxx $cxx_flags -c $lib_dir/"$file" -o $obj_dir/$lib_dir/"${file%.*}".o || CompileError
     done
 
     # Compile static library
-    echo "Compiling static library..."
+    DebugMsg "Compiling static library..."
     ar rcs $bin_dir/libbzip2.a $obj_dir/$lib_dir/*.o || CompileError
-    echo "Compiled successfully. Written to $bin_dir/libmystring.a"
+    DebugMsg "Compiled successfully. Written to $bin_dir/libmystring.a"
 
     # Compile dynamic library
-    echo "Compiling dynamic library..."
+    DebugMsg "Compiling dynamic library..."
     $cxx $cxx_flags -shared -fPIC -o $bin_dir/libbzip2.so $obj_dir/$lib_dir/*.o || CompileError
-    echo "Compiled successfully. Written to $bin_dir/libmystring.so"
+    DebugMsg "Compiled successfully. Written to $bin_dir/libmystring.so"
 }
 
 # Compile the examples
@@ -75,7 +84,7 @@ CompileExamples(){
     for file in "${examples[@]}"; do
         $cxx $cxx_flags -fPIC $obj_dir/$examples_dir/"${file%.*}".o $bin_dir/libbzip2.so -o $bin_dir/"${file%.*}" \
         || CompileError
-        echo "Successfully linked with dynamic library. Written to $bin_dir/${file%.*}"
+        DebugMsg "Successfully linked with dynamic library. Written to $bin_dir/${file%.*}"
     done
 }
 
@@ -194,11 +203,26 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-# Check if there is more than one argument
-if [ $# -gt 1 ]; then
+# Check if there is more than one argument or second argument splitted by '=' is not --build_type
+if [ $# -gt 1 ] && [ "${2%=*}" != "--build_type" ]; then
     echo -e "${RED}Error: Too many arguments${NORMAL}"
     Help
     exit 1
+fi
+
+# Check build type if it is passed
+if [ "${2%=*}" == "--build_type" ]; then
+    if [ "${2#*=}" == "Debug" ]; then
+        cxx_flags="-g -O0"
+        build_type="Debug"
+    elif [ "${2#*=}" == "Release" ]; then
+        cxx_flags="-O3"
+        build_type="Release"
+    else
+        echo -e "${RED}Error: Invalid build type${NORMAL}"
+        Help
+        exit 1
+    fi
 fi
 
 # Check if the argument is -h or --help
