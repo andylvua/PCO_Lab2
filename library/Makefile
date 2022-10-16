@@ -1,10 +1,11 @@
 CXX = g++
-CXXFLAGS = -O3
+CXXFLAGS =
 PRG_NAME = mystring
 VPATH = library
 vpath %.cpp library
-OBJ_DIR := ./obj
-BIN_DIR := ./bin
+BUILD_DIR = build
+OBJ_DIR := $(BUILD_DIR)/obj
+BIN_DIR := $(BUILD_DIR)/bin
 OBJ = mystring.o
 
 all: $(BIN_DIR)/$(PRG_NAME)
@@ -22,6 +23,8 @@ $(BIN_DIR)/$(PRG_NAME): $(OBJ_DIR) $(BIN_DIR) $(OBJ_DIR)/$(OBJ)
 $(OBJ_DIR)/$(OBJ): $(PRG_NAME).cpp
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
+release: CXXFLAGS += -O3
+release: all
 
 .PHONY: clean
 clean:

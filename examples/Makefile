@@ -1,10 +1,11 @@
 CXX = g++
-CXXFLAGS = -O3
+CXXFLAGS =
 PRG_NAME = example
 VPATH = examples bin
 vpath %.cpp examples
-OBJ_DIR := ./obj
-BIN_DIR := ./bin
+BUILD_DIR = build
+OBJ_DIR := $(BUILD_DIR)/obj
+BIN_DIR := $(BUILD_DIR)/bin
 OBJ = example.o
 LIB = mystring.so
 
@@ -24,6 +25,9 @@ $(OBJ_DIR)/$(OBJ): $(PRG_NAME).cpp
 
 $(BIN_DIR)/$(LIB):
 	make -f ./library/Makefile all
+
+release: CXXFLAGS += -O3
+release: all
 
 .PHONY: clean
 clean:
