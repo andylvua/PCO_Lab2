@@ -15,6 +15,7 @@ obj_dir=obj
 dependencies=(blocksort.c bzlib.c compress.c crctable.c decompress.c huffman.c randtable.c)
 # Compiler
 cxx=gcc
+cxx_flags=-O3
 
 # Flags
 Help(){
@@ -41,8 +42,9 @@ CompileLibraries(){
     mkdir -p $bin_dir && mkdir -p $obj_dir
     mkdir -p $obj_dir/library
 
+    echo "Compiling dependencies..."
     for file in "${dependencies[@]}"; do
-        $cxx -c $lib_dir/"$file" -o $obj_dir/library/"${file%.*}".o || CompileError
+        $cxx $cxx_flags -c $lib_dir/"$file" -o $obj_dir/library/"${file%.*}".o || CompileError
     done
 
     # Compile static library
@@ -52,7 +54,7 @@ CompileLibraries(){
 
     # Compile dynamic library
     echo "Compiling dynamic library..."
-    $cxx -shared -fPIC -o $bin_dir/libbzip2.so $obj_dir/library/*.o || CompileError
+    $cxx $cxx_flags -shared -fPIC -o $bin_dir/libbzip2.so $obj_dir/library/*.o || CompileError
     echo "Compiled successfully. Written to $bin_dir/libmystring.so"
 }
 
@@ -62,13 +64,13 @@ CompileExamples(){
     mkdir -p $obj_dir/examples
     # Compile the examples
     for file in "$examples_dir"/*.c; do
-        $cxx -c "$file" -o $obj_dir/examples/"${file##*/}".o || CompileError
+        $cxx $cxx_flags -c "$file" -o $obj_dir/examples/"${file##*/}".o || CompileError
     done
 
     # Link the examples with the dynamic library
     for file in "$examples_dir"/*.c; do
         file_name="${file##*/}"
-        $cxx -fPIC $obj_dir/examples/"${file##*/}".o $bin_dir/libbzip2.so -o $bin_dir/"${file_name%.*}" || CompileError
+        $cxx $cxx_flags -fPIC $obj_dir/examples/"${file##*/}".o $bin_dir/libbzip2.so -o $bin_dir/"${file_name%.*}" || CompileError
         echo "Successfully linked with dynamic library. Written to $bin_dir/${file##*/}"
     done
 }
