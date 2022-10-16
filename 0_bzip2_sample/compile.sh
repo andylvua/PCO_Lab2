@@ -217,6 +217,7 @@ if [ "${2%=*}" == "--build_type" ]; then
         cxx_flags="-g -O0"
         build_type="Debug"
     elif [ "${2#*=}" == "Release" ]; then
+        echo "build_type is set to Release. To see debug messages, set build_type to Debug"
         cxx_flags="-O3"
         build_type="Release"
     else
