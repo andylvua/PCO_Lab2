@@ -10,8 +10,9 @@ valid_args=(-h --help -cr --compile-run -c --compile -r --run --clean)
 # Variables
 lib_dir=library
 examples_dir=examples
-bin_dir=bin
-obj_dir=obj
+build_dir=build
+bin_dir=$build_dir/bin
+obj_dir=$build_dir/obj
 shopt -s nullglob
 dependencies=("${lib_dir}"/*.c)
 dependencies=("${dependencies[@]##*/}")

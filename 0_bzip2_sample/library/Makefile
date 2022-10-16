@@ -3,8 +3,9 @@ CXXFLAGS =
 PRG_NAME = libbzip2
 VPATH = library
 vpath %.c library
-OBJ_DIR = obj
-BIN_DIR = bin
+BUILD_DIR = build
+OBJ_DIR = $(BUILD_DIR)/obj
+BIN_DIR = $(BUILD_DIR)/bin
 LIB_DIR = library
 OBJ = $(patsubst $(LIB_DIR)/%.c, $(OBJ_DIR)/$(LIB_DIR)/%.o, $(wildcard $(LIB_DIR)/*.c))
 

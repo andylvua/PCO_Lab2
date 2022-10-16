@@ -1,8 +1,9 @@
 CXX = gcc
 CXXFLAGS =
 PRG_NAME = bzip2 bzip2recover
-OBJ_DIR = obj
-BIN_DIR = bin
+BUILD_DIR = build
+OBJ_DIR = $(BUILD_DIR)/obj
+BIN_DIR = $(BUILD_DIR)/bin
 EX_DIR = examples
 LIB = libbzip2.so
 OBJ = $(patsubst %, $(OBJ_DIR)/$(EX_DIR)/%.o, $(PRG_NAME))
