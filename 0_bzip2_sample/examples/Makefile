@@ -31,6 +31,12 @@ $(BIN_DIR)/$(LIB):
 release: CXXFLAGS += -O3
 release: all
 
+run: all
+	echo "Running bzip2..."
+	$(BIN_DIR)/bzip2 -h
+	echo "Running bzip2recover..."
+	$(BIN_DIR)/bzip2recover -h
+
 .PHONY: clean
 clean:
 	rm -rf $(OBJ_DIR)/$(EX_DIR) $(TARGETS)
