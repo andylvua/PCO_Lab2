@@ -29,6 +29,10 @@ $(BIN_DIR)/$(LIB):
 release: CXXFLAGS += -O3
 release: all
 
+run: all
+	echo "Running example..."
+	$(BIN_DIR)/example -h
+
 .PHONY: clean
 clean:
 	rm -rf $(OBJ_DIR)/$(OBJ) $(BIN_DIR)/$(PRG_NAME)
