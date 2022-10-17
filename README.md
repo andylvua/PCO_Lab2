@@ -1,209 +1,195 @@
-# Lab 1. Custom string
-[![CMake](https://github.com/ucu-cs/lab1_cstring-zinchukkryvenyaroshevychkharabara/actions/workflows/cmake.yml/badge.svg)](https://github.com/ucu-cs/lab1_cstring-zinchukkryvenyaroshevychkharabara/actions/workflows/cmake.yml)
+# Lab 2. Shell scripts. Make and CMake
 > Team members: Andrii Yaroshevych, Pavlo Kryven, Yurii Zinchuk and Yurii Kharabara
+>
+> Option chosen for library: `0` (bzip2)
 
 ## Description
-This is a simple implementation of the C++ string class.
-It is a part of the first labs of the course "Principles of Computer Organization" at UCU.
+The goal of this lab is to get familiar with manual compilation, make build system and software for build automation like CMake.
 
 ## Installation
-
-### Requirements
-❯ CMake 3.14 or higher
-
-❯ C++ compiler with C++14 support
-
-❯ Git
-
-❯ C++ IDE (optional). CLion is recommended.
-
-> **Note**
->
-> CMake and compiler is a mandatory requirements. If your CMake version is incompatible with the project,
-> please, consider updating it. For more information, please, refer to the official CMake documentation.
-> However, if you are using macOS or Linux, you can use the following command to install the latest version of CMake:
->
-> ```bash
-> macOS
-> $ brew install cmake
-> ```
->
-> ```bash
-> Ubuntu
-> $ sudo apt install cmake
-> ```
->
-> ```bash
-> Arch based distros
-> $ sudo pacman -S cmake
-> ```
->
-> For compiler installation, please, refer to the official documentation of your compiler.
 
 To install the library, you need to clone the repository first:
 ```bash
 $ mkdir ~/workspace
 $ cd ~/workspace
-$ git clone https://github.com/ucu-cs/lab1_cstring-zinchukkryvenyaroshevychkharabara
-$ cd lab1_cstring-zinchukkryvenyaroshevychkharabara
+$ git clone https://github.com/ucu-cs/lab2_make_cmake-zinchukkryvenyaroshevychkharabara
+$ cd lab2_make_cmake-zinchukkryvenyaroshevychkharabara
 ```
 > Replace `~/workspace` with the path to your workspace.
 >
 > Remember, if you want to change the name of the folder you clone the repository to,
 > you can simply add the name of the folder after the repository URL.
 > ```bash
-> $ git clone https://github.com/ucu-cs/lab1_cstring-zinchukkryvenyaroshevychkharabara folder_name
+> $ git clone https://github.com/ucu-cs/lab2_make_cmake-zinchukkryvenyaroshevychkharabara folder_name
 > ```
 
-To compile and run the example file using g++:
+### Requirements
+❯ CMake 3.14 or higher. make 3.81 or higher recommended.
+
+❯ Compiler with C++14 and C11 support. GCC 4.9 or higher, Clang 3.4 or higher, MSVC 16.8 or higher are recommended.
+
+❯ Git
+
+❯ Bash
+
+❯ C++ IDE (optional). CLion is recommended.
+
+
+## Compilation
+This section describes how to compile the `mystring` library. 
+For compiling `bzip2` library from the second task, please head to the [bzip2](#bzip2) section.
+
+
+> **Note**
+> 
+> The following instructions are for Linux and macOS. For Windows, please use [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+<br>
+
+### Using `compile.sh`
+The `compile.sh` script is used to compile the project. It takes the following arguments:
+- `-h` or `--help` - prints help message
+- `-cr` or `--compile-run` - compiles the libraries and runs the example
+- `-c` or `--compile` - compiles the libraries
+- `-r` or `--run` - runs the example
+- `--clean` - cleans the build directory
+- `--build_type=TYPE` - specifies the build type. Possible values are `Debug` and `Release`. Default value is `Debug`
+
+To compile the libraries and run the example, use the following command:
 ```bash
-$ cd examples
-$ g++ -c ../src/mystring.cpp ./example.cpp
-$ g++ -o example ./mystring.o ./example.o 
-$ ./example
+$ ./compile.sh -cr
+```
+and follow the instructions.
+
+> **Note**
+> 
+> Libraries and executables will be written to the `build/bin` directory.
+
+> **Warning**
+> 
+> If you see the following error:
+> ```bash
+> zsh: permission denied: ./compile.sh
+> ```
+> You need to give the execution permissions to the script. To do that, run the following command:
+> ```bash
+> $ chmod +x compile.sh
+> ```
+> and try again.
+
+`--clean` option can be used to clean the build directory. For example, if you want to clean the build directory and compile the libraries, use the following commands:
+```bash
+$ ./compile.sh --clean
+$ ./compile.sh -c
+```
+> Note that `--clean` option will remove all the files in the build directory including the compiled libraries, so use it with caution.
+
+`--build_type` option can be used to specify the build type. For example, if you want to compile the libraries in release mode, use the following command:
+```bash
+$ ./compile.sh -c --build_type=Release
+```
+> Note that the default build type is `Debug`. 
+> In this mode, the compiler will not optimize code, and you will see some debug information in the output. 
+> 
+> In release mode, the code will be optimized using -O3 flag, and you will not see any debug information.
+
+<br>
+
+### Using `make`
+Our library also supports `make` build system. Two makefiles are provided: `examples/Makefile` and `library/Makefile`.
+Makefile located in the `library` directory is used to compile the static and shared libraries. Makefile located in the `examples` directory is used to compile the example.
+
+To compile the libraries, use the following command:
+> Make sure you are in the root directory of the project
+```bash
+$ make -f library/Makefile
+```
+To compile the example, use the following command:
+> Make sure you are in the root directory of the project
+```bash
+$ make -f examples/Makefile
 ```
 
-### Building manually
 > **Note**
 >
-> If you are using CLion, you can skip this step. IDE will automatically build the project for you.
+> Libraries and executables will be written to the `build/bin` directory.
 
-Then, you can build the library using CMake:
-```bash
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-```
-
-This will build the library and the tests.
-
-## Usage
-To use the library, you need to include the header file:
-> You might need to use relative path to the header file according to your working directory.
-
-
-```cpp
-#include "mystring.h"
-```
-
-After that, you can use the library:
-```cpp
-#include <iostream>
-#include "mystring.h"
-
-
-int main() {
-    my_str_t example { "Hello, World!" };
-    std::cout << example << std::endl;
-    return 0;
-}
-```
-
-### Methods
-The library provides all the necessary methods to work with strings in C++ just like the standard library does:
-
-#### Constructors
-
-```cpp
-my_str_t str1; //Default constructor
-my_str_t str2(10, 'a'); //Constructor with size and char
-my_str_t str3("Hello"); //Constructor with char array
-my_str_t str4(std::string ("Hello")); //Constructor with std::string
-my_str_t str5(str4); //Copy constructor
-```
-
-#### All main methods
-
-```cpp
-my_str_t example { "Hello, World!" };
-my_str_t str { "How are you?" };
-
-example.size(); //Returns the size of the string
-sxample.capacity(); //Returns the capacity of the string
-example.c_str(); //Returns the pointer to the string
-
-example.swap(str); //Swap two strings
-example.at(0); //Returns the character at the specified position
-example.reserve(100); //Reserves memory for the string
-example.shrink_to_fit(); //Shrinks the capacity of the string to fit its size
-example.resize(10); //Resizes the string to a specified length
-example.clear(); //Clears the string
-example.insert(0, "Hello"); //Inserts a string at a specified position
-example.append(str); //Appends a string to the end
-example.erase(0, 5); //Erases a substring from the string
-example.find("Hello"); //Finds the index of first occurrence of a substring
-example.substr(0, 5); //Returns a substring of the string
-```
-
-#### Operators
-
-```cpp
-my_str_t example { "Hello, World!" };
-my_str_t str { "How are you?" };
-
-// Comparison operators
-example == str;
-example != str;
-example < str;
-example > str;
-example <= str;
-example >= str;
-
-// Assignment operators
-example = str;
-example = str + example;
-example += str;
-
-example = example * 2;
-example *= 2;
-
-// Stream operators and readline function
-std::cout << example << std::endl;
-std::cin >> example;
-
-readline(std::cin, example);
-```
-
-## Testing
-To run the tests, you need to build the library first.
-Then, you can run the tests:
-```bash
-$ cd build
-$ ctest -C
-```
-
-For your convenience, you can also run the tests using CLion. For even more convenience,
-we've generated a test report for you. Please head to [https://andylvua.github.io/POK_Lab1/](https://andylvua.github.io/POK_Lab1/)
-
-## Additional tasks implemented
-- [x] Move constructor `my_str_t(my_str_t &&mystr);`
-- [x] Assignment operator `my_str_t &operator=(my_str_t&& mystr);`
-- [x] Concatenation operators
-- [x] Multiplication operators
-
-## Performance check
-We've also done a performance tests to compare the performance of our implementation 
-with the standard library using [Google Benchmark](https://github.com/google/benchmark). 
-You can find the results in the [benchmark_results](https://github.com/ucu-cs/lab1_cstring-zinchukkryvenyaroshevychkharabara/blob/efba977e7f413b91b4a3530e06acb6c1da4d7b7d/benchmark_results/benchmark_results.txt) file.
-
-Most of the methods are working pretty much the same as the standard library does.
-However, there are some differences. For example, the `substr()`, `erase()`, `shrink_to_fit()`, and `swap()` methods
-are working significantly slower than `std::string`. It happens because we can't operate with memory directly in
-some cases. For example, we can't use `realloc()` to resize the string. 
-
-Also, standard library uses some complex algorithms to optimize the performance of the methods we can't archive 
-with our implementation.
-
-Despite this, some methods are working faster than the standard library. For example, the `find()` method is working
-almost 4 times faster than the standard library. `resize()`, `reserve()`, and `at()` methods are working 2 times faster.
 
 > **Note**
 > 
-> You can check the actual performance of the methods by running the benchmark yourself. The library provides
-> a `benchmark.cpp` file with the benchmark tests and a `CMakeLists.txt` file to build the benchmark automatically using CMake. 
+> Running `examples/Makefile` will also compile the libraries.
+
+To run the example, use the following command:
+> Make sure you are in the root directory of the project
+```bash
+$ make -f examples/Makefile run
+```
+
+<br>
+
+Our build system also support the release mode. To compile the libraries in release mode, use the following command:
+```bash
+$ make -f library/Makefile release
+```
+In release mode, the code will be optimized using -O3 flag.
+
+<br>
+
+To clean the build directory, use the following command:
+```bash
+$ make -f library/Makefile clean
+```
+or
+```bash
+$ make -f examples/Makefile clean
+```
+
+> **Note**
 > 
-> Also, you can find the benchmark results on the [GitHub Actions](https://github.com/ucu-cs/lab1_cstring-zinchukkryvenyaroshevychkharabara/actions/workflows/cmake.yml) page.
+> Makefile located in `examples` directory will only remove example executable and object files.
+> If you want to clean the build directory completely, use `make -f library/Makefile clean` instead.
+
+<br>
+
+### Using CMake
+Our library also supports CMake tool.
+
+To build the project using CMake, use the following commands:
+> Make sure you are in the root directory of the project
+```bash
+$ cmake -B build
+$ cmake --build build
+```
+
+> **Note**
+>
+> Libraries and executables will be written to the `build/bin` directory.
+
+If you want to build the project in release mode, use the following commands:
+```bash
+$ cmake -B build -DCMAKE_BUILD_TYPE=Release
+$ cmake --build build
+```
+
+<br>
+
+To run the example, use the following command:
+```bash
+$ ./build/bin/example
+```
+
+<br>
+
+To clean the build directory, use the following command:
+```bash
+$ cmake --build build --target clean
+```
+
+## `bzip2` library compilation
+For further instructions on how to compile the `bzip2` library, please head to the [0_bzip2_sample/README.md](0_bzip2_sample/README.md) file.
+
+## About our library
+Our library is a simple implementation of the `std::string` class. For more information, please head to the [library/README.md](library/README.md) file.
 
 ## License
 The [MIT](https://choosealicense.com/licenses/mit/) License (MIT)
