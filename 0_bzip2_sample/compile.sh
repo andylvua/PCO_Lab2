@@ -58,7 +58,7 @@ CompileLibraries(){
 
     DebugMsg "Compiling dependencies..."
     for file in "${dependencies[@]}"; do
-        $cxx $cxx_flags -c $lib_dir/"$file" -o $obj_dir/$lib_dir/"${file%.*}".o || CompileError
+        $cxx $cxx_flags -c $lib_dir/"$file" -fPIC -o $obj_dir/$lib_dir/"${file%.*}".o || CompileError
     done
 
     # Compile static library
