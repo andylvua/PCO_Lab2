@@ -62,9 +62,9 @@ jobs:
         uses: knicknic/os-specific-run@v1.0.3
         with:
           macos: |
-            ${{github.workspace}}/build/benchmark/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_macos --benchmark_out_format=console
+            ${{github.workspace}}/build/bin/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_macos --benchmark_out_format=console
           linux: |            
-            ${{github.workspace}}/build/benchmark/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_ubuntu --benchmark_out_format=console
+            ${{github.workspace}}/build/bin/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_ubuntu --benchmark_out_format=console
 
 #      - name: Commit report
 #        run: |
