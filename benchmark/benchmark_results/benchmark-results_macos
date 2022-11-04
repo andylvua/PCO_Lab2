@@ -1,0 +1,39 @@
+2022-11-04T23:11:30+00:00
+Running /Users/runner/work/PCO_Lab2/PCO_Lab2/build/bin/benchmark_run
+Run on (3 X 2574 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB
+  L1 Instruction 32 KiB
+  L2 Unified 256 KiB (x3)
+  L3 Unified 30720 KiB
+Load Average: 14.63, 7.47, 4.49
+-------------------------------------------------------------------------
+Benchmark                               Time             CPU   Iterations
+-------------------------------------------------------------------------
+MyStringCopyConstructor            148526 ns        76162 ns         9335
+STDStringCopyConstructor           129027 ns        75512 ns         9059
+MyStringAssignmentOperator            475 ns          223 ns      3083157
+STDStringAssignmentOperator           353 ns          225 ns      3126703
+MyStringSubstring                     389 ns          251 ns      2817446
+STDStringSubstring                   16.7 ns         14.1 ns     49389336
+MyStringFind                         3.04 ns         3.01 ns    231815713
+STDStringFind                        11.6 ns         8.21 ns     86057462
+MyStringInsert                        180 ns          141 ns      4522548
+STDStringInsert                       342 ns          195 ns     12001097
+MyStringResize                       5.08 ns         3.03 ns    231339190
+STDStringResize                      10.1 ns         5.05 ns    138301656
+MyStringErase                        2402 ns         1490 ns       472797
+STDStringErase                        297 ns          206 ns      3296119
+MyStringAppend                        248 ns          174 ns     12501116
+STDStringAppend                       236 ns          172 ns     12727736
+MyStringConcatenationOperator         183 ns          125 ns      9899870
+STDStringConcatenationOperator        200 ns          177 ns     12261127
+MyStringMultiplyOperator             8884 ns         7307 ns        97860
+MyStringReserve                      3.57 ns         3.07 ns    229481863
+STDStringReserve                     7.01 ns         5.50 ns    129788260
+MyStringShrinkToFit                   186 ns          184 ns      3767451
+STDStringShrinkToFit                 1.61 ns         1.59 ns    438890735
+MyStringSwap                         2.73 ns         2.70 ns    257277271
+STDStringSwap                       0.042 ns        0.042 ns   1000000000
+MyStringAt                           2.38 ns         2.04 ns    344773238
+STDStringAt                          4.32 ns         4.05 ns    172698789
