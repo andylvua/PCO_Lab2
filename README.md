@@ -1,4 +1,5 @@
 # Lab 2. Shell scripts. Make and CMake
+[![CMake](https://github.com/andylvua/PCO_Lab2/actions/workflows/cmake.yml/badge.svg)](https://github.com/andylvua/PCO_Lab2/actions/workflows/cmake.yml)
 > Team members: Andrii Yaroshevych, Pavlo Kryven, Yurii Zinchuk and Yurii Kharabara
 >
 > Option chosen for library: `0` (bzip2)
