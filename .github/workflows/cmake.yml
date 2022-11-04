@@ -66,11 +66,11 @@ jobs:
           linux: |            
             ${{github.workspace}}/build/bin/benchmark_run --benchmark_out=${{github.workspace}}/benchmark/benchmark_results/benchmark-results_ubuntu --benchmark_out_format=console
 
-#      - name: Commit report
-#        run: |
-#          git config --global user.name 'GitHub Actions'
-#          git config --global user.email 'action@github.com'
-#          git pull
-#          git add .
-#          git commit -am "Automated report"
-#          git push
+      - name: Commit report
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'action@github.com'
+          git pull
+          git add .
+          git commit -am "Automated report"
+          git push
